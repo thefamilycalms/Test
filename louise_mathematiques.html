@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>➕ Mathématiques test – Louise</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f6ff;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .quiz-box {
+            background: white;
+            padding: 25px;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>➕ Mathématiques – Louise</h1>
+
+<p id="progression"></p>
+<div style="background:#ddd; border-radius:10px; overflow:hidden;">
+    <div id="barre" style="height:15px; width:0%; background:#4CAF50;"></div>
+</div>
+
+
+    <div class="quiz-box">
+        <h2 id="question"></h2>
+	<img id="image" style="max-width:100%; display:none; margin:15px 0;">
+        <div id="reponses"></div>
+        <p id="score"></p>
+    </div>
+
+<script>
+    // Questions du quiz
+const questions = [
+    {
+        question: "Combien font 7 × 6 ?",
+	image: "Louise.JPG",
+        reponses: ["36", "42", "48"],
+        bonneReponse: 1
+    },
+    {
+        question: "Quel est le résultat de 120 ÷ 10 ?",
+        reponses: ["10", "12", "20"],
+        bonneReponse: 1
+    }
+];
+    let indexQuestion = 0;
+    let score = 0;
+
+    function afficherQuestion() {
+        const q = questions[indexQuestion];
+        document.getElementById("question").textContent = q.question;
+
+        const zoneReponses = document.getElementById("reponses");
+        zoneReponses.innerHTML = "";
+
+        q.reponses.forEach((rep, index) => {
+            const bouton = document.createElement("button");
+            bouton.textContent = rep;
+            bouton.onclick = () => verifierReponse(index);
+            zoneReponses.appendChild(bouton);
+        });
+    }
+
+    function verifierReponse(indexChoisi) {
+        if (indexChoisi === questions[indexQuestion].bonneReponse) {
+            score++;
+        }
+
+        indexQuestion++;
+
+        if (indexQuestion < questions.length) {
+            afficherQuestion();
+        } else {
+            afficherResultat();
+        }
+    }
+
+function melanger(tableau) {
+    for (let i = tableau.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tableau[i], tableau[j]] = [tableau[j], tableau[i]];
+    }
+}
+
+
+function afficherResultat() {
+    document.querySelector(".quiz-box").innerHTML =
+        `<h2>🎉 Fin du quiz !</h2>
+         <p>Score : ${score} / ${questions.length}</p>
+         <a href="Louise.html">⬅ Retour aux thèmes</a><br><br>
+         <a href="index.html">🏠 Accueil</a>`;
+}
+melanger(questions);
+
+    afficherQuestion();
+
+document.getElementById("barre").style.width =
+    ((indexQuestion + 1) / questions.length * 100) + "%";
+
+
+</script>
+
+</body>
+</html>

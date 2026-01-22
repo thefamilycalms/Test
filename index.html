@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Les Quiz CALMS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef3ff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .menu {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Style commun à toutes les cases */
+        .case {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 15px 0;
+            padding: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            border-radius: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .case img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .case:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Couleurs spécifiques */
+        .case-louise {
+            background-color: #2196F3; /* bleu */
+        }
+
+        .case-alice {
+            background-color: #e91e63; /* rose */
+        }
+
+        .case-famille {
+            background-color: #4CAF50; /* vert */
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <h1>📚 Les quizz CALMS </h1>
+    <p>Choisis ta catégorie</p>
+
+    <div class="menu">
+        <a href="Louise.html" class="case case-louise">
+            <img src="images/louise.jpg" alt="Louise">
+            🦴 Louise
+        </a>
+        <a href="Alice.html" class="case case-alice">
+            <img src="images/alice.jpg" alt="Alice">
+            🏛️ Alice
+        </a>
+        <a href="Famille.html" class="case case-famille">
+            <img src="images/famille.jpeg" alt="Famille">
+            🏰 Famille
+        </a>
+    </div>
+
+</body>
+</html>

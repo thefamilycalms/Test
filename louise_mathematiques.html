@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>➕ Mathématiques test – Louise</title>
+    <title>➕ Mathématiques – Louise</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,9 +36,32 @@
         button:hover {
             background-color: #45a049;
         }
+
+#retourThemes {
+    position: fixed;   /* toujours visible sur la page */
+    top: 10px;         /* espace depuis le haut */
+    left: 10px;        /* espace depuis la gauche */
+    background-color: #ff5722;  /* couleur distinctive */
+    color: white;
+    font-size: 14px;   /* plus petit que les boutons du quiz */
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 6px;
+    z-index: 1000;     /* toujours au-dessus des autres éléments */
+    cursor: pointer;
+    border: none;
+}
+
+#retourThemes:hover {
+    background-color: #e64a19;
+}
+
+
+
     </style>
 </head>
 <body>
+	<button id="retourThemes" onclick="retourThemes()">⬅️ Retour aux thèmes</button>
 
     <h1>➕ Mathématiques – Louise</h1>
 
@@ -52,15 +75,21 @@
         <h2 id="question"></h2>
 	<img id="image" style="max-width:100%; display:none; margin:15px 0;">
         <div id="reponses"></div>
-        <p id="score"></p>
+    	<p id="feedback" style="font-size:18px; font-weight:bold;"></p>
+
+
+    <button id="suivant" style="display:none;" onclick="questionSuivante()">    
+        ➡️ Question suivante
+    </button>
+
     </div>
 
 <script>
     // Questions du quiz
+
 const questions = [
     {
         question: "Combien font 7 × 6 ?",
-	image: "Louise.JPG",
         reponses: ["36", "42", "48"],
         bonneReponse: 1
     },
@@ -70,37 +99,87 @@ const questions = [
         bonneReponse: 1
     }
 ];
-    let indexQuestion = 0;
-    let score = 0;
 
-    function afficherQuestion() {
-        const q = questions[indexQuestion];
-        document.getElementById("question").textContent = q.question;
+let indexQuestion = 0;
+let score = 0;
 
-        const zoneReponses = document.getElementById("reponses");
-        zoneReponses.innerHTML = "";
+function afficherQuestion() {
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("suivant").style.display = "none";
 
-        q.reponses.forEach((rep, index) => {
-            const bouton = document.createElement("button");
-            bouton.textContent = rep;
-            bouton.onclick = () => verifierReponse(index);
-            zoneReponses.appendChild(bouton);
-        });
+    const q = questions[indexQuestion];
+    document.getElementById("question").textContent = q.question;
+
+    const img = document.getElementById("image");
+    if (q.image) {
+        img.src = q.image;
+        img.style.display = "block";
+    } else {
+        img.style.display = "none";
     }
 
-    function verifierReponse(indexChoisi) {
-        if (indexChoisi === questions[indexQuestion].bonneReponse) {
-            score++;
-        }
+    const zoneReponses = document.getElementById("reponses");
+    zoneReponses.innerHTML = "";
 
-        indexQuestion++;
+    // Mélanger les réponses
+    const reponsesMelangees = q.reponses
+        .map((rep, index) => ({ texte: rep, indexOriginal: index }))
+        .sort(() => Math.random() - 0.5); // tri aléatoire
 
-        if (indexQuestion < questions.length) {
-            afficherQuestion();
-        } else {
-            afficherResultat();
-        }
+    reponsesMelangees.forEach(rep => {
+        const bouton = document.createElement("button");
+        bouton.textContent = rep.texte;
+        bouton.onclick = () => verifierReponse(rep.indexOriginal);
+        zoneReponses.appendChild(bouton);
+    });
+
+    // Mettre à jour la barre de progression
+    document.getElementById("barre").style.width =
+        ((indexQuestion + 1) / questions.length * 100) + "%";
+}
+
+
+    // Mettre à jour la barre de progression
+document.getElementById("barre").style.width =
+    ((indexQuestion + 1) / questions.length * 100) + "%";
+ 
+
+function verifierReponse(indexChoisi) {
+    const feedback = document.getElementById("feedback");
+    const boutonSuivant = document.getElementById("suivant");
+
+    const bonne = questions[indexQuestion].bonneReponse;
+    const bonneValeur = questions[indexQuestion].reponses[bonne];
+
+    if (indexChoisi === bonne) {
+        score++;
+        feedback.textContent = "✅ Bonne réponse !";
+        feedback.style.color = "green";
+    } else {
+        feedback.textContent = "❌ Mauvaise réponse. La bonne réponse était : " + bonneValeur;
+        feedback.style.color = "red";
     }
+
+    // Désactiver les boutons de réponse
+    document.querySelectorAll("#reponses button").forEach(b => b.disabled = true);
+
+    // Afficher le bouton "Question suivante"
+    boutonSuivant.style.display = "block";
+}
+
+function questionSuivante() {
+    indexQuestion++;
+
+    document.getElementById("feedback").textContent = "";
+
+    if (indexQuestion < questions.length) {
+        afficherQuestion();
+    } else {
+        afficherResultat();
+    }
+}
+
+
 
 function melanger(tableau) {
     for (let i = tableau.length - 1; i > 0; i--) {
@@ -109,20 +188,46 @@ function melanger(tableau) {
     }
 }
 
-
 function afficherResultat() {
+    // Récupérer le meilleur score stocké
+    const meilleurScore = localStorage.getItem("meilleurScore") || 0;
+
+    // Mettre à jour le meilleur score si le score actuel est plus élevé
+    if (score > meilleurScore) {
+        localStorage.setItem("meilleurScore", score);
+    }
+
     document.querySelector(".quiz-box").innerHTML =
         `<h2>🎉 Fin du quiz !</h2>
          <p>Score : ${score} / ${questions.length}</p>
+         <p>Meilleur score : ${Math.max(score, meilleurScore)} / ${questions.length}</p>
          <a href="Louise.html">⬅ Retour aux thèmes</a><br><br>
-         <a href="index.html">🏠 Accueil</a>`;
+         <a href="index.html">🏠 Accueil</a><br><br>
+         <button id="rejouerBtn">🔄 Rejouer</button>`;
+
+ // Lier le bouton Rejouer après qu’il soit dans le DOM
+    document.getElementById("rejouerBtn").addEventListener("click", rejouerQuiz);
 }
+
+function rejouerQuiz() {
+    indexQuestion = 0;
+    score = 0;
+    melanger(questions); // pour mélanger les questions à nouveau
+    afficherQuestion();
+}
+
 melanger(questions);
 
-    afficherQuestion();
+afficherQuestion()
+document.getElementById("suivant").style.display = "none";
+document.getElementById("feedback").textContent = "";
 
-document.getElementById("barre").style.width =
-    ((indexQuestion + 1) / questions.length * 100) + "%";
+;
+
+function retourThemes() {
+    // Remplace "Louise.html" par la page sur laquelle tu veux revenir
+    window.location.href = "index.html";
+}
 
 
 </script>
